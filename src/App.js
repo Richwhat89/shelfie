@@ -3,56 +3,80 @@ import './App.css';
 import Dashboard from './Components/Dashboard';
 import Form from './Components/Form';
 import Header from './Components/Header';
+import axios from 'axios';
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state={
-      text: ''
+      product: '',
+      products: []
     };
+
+    // this.handleChange=this.handleChange.bind(this);
   }
 
+  componentDidMount(){
+    axios
+    .get('api/product')
+    .then(response=>{
+      this.setState({products: response.data});
+    });
+  }
+
+  // handleChange(event){
+  //   this.setState({text: event.target.value});
+  // }
+
   updateProduct=(id, text)=>{
-    this.setState({text});
+    axios
+      .put('api/product/:id', {text})
+      .then(results=>{this.setState({product: results.data});
+    });
+  }
+
+  deleteProduct=(id)=>{
+    axios
+      .post(`api/product?id=${id}`)
+      .then(results=>{this.setState({product: results.data});
+    });
   }
 
   createProduct=()=>{
-  
+    const{text}=this.state
+    axios
+      .delete('api/product', {text})
+      .then(results=>{console.log('results', results)
+      this.setState({product: results.data});
+    });
   }
 
   render() {
-    const{text}=this.state;
-    const{int}=this.state;
 
     return (
       <div className="App">
-        <header className="App-header">
-          <p><Dashboard/></p>
-          <p><Form/></p>
-          <p><Header/></p>
-        </header>
-        <input
-          placeholder='Product'
-          value={text}
-          onChange={(e)=>this.createProduct(e.target.value)}
-        />
-        <input
-          placeholder='Price'
-          value={int}
-          onChange={(e)=>this.price(e.target.value)}
-        />
-        <input
-          placeholder='Image'
-          value={int}
-          onChange={(e)=>this.image(e.target.value)}
-        />
+        <div className="App-header">
+        <Header/>
+        </div>
+        <div>
+        <Dashboard/>
+        </div>
+        <div>
+          {this.state.products.map(product=>(
+        <Form
+          name={this.handleChange}
+          price={product.int}
+          image={product.img}/>
+          ))
+          }
+        </div>
         <div>
           <button>Cancel</button>
           <button>Add Inventory</button>
         </div>
       </div>
-    );
+    )
   }
 }
 

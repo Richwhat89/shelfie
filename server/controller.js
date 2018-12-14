@@ -39,7 +39,7 @@ module.exports = {
         });
     },
 
-    delete:(req,res)=>{
+    delete_product:(req,res)=>{
         const dbInstance=req.app.get('db');
         const {params}=req;
 
